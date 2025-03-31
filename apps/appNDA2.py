@@ -3,14 +3,12 @@ from tkinter import filedialog, messagebox, scrolledtext, Toplevel
 from docx import Document
 import os
 
-# Variables globales
 plantilla_paths = []
 directorio_guardado = ""
 clausulas = {}
 clausulas_seleccionadas = []
 boceto_contrato = ""
 
-# Función para cargar las cláusulas desde archivos
 def cargar_clausulas():
     carpeta_clausulas = "clausulas"
     if not os.path.exists(carpeta_clausulas):
@@ -34,7 +32,6 @@ def cargar_clausulas():
             except Exception as e:
                 messagebox.showerror("Error", f"Error al leer {nombre_archivo}: {e}")
 
-# Función para mostrar la vista previa de la cláusula
 def mostrar_vista_previa(event):
     seleccion = listbox_clausulas.curselection()
     if seleccion:
@@ -49,7 +46,6 @@ def mostrar_vista_previa(event):
         texto_vista_previa.config(state=tk.DISABLED)
         texto_vista_previa.pack(padx=10, pady=10)
 
-# Función para actualizar el boceto del contrato
 def actualizar_boceto():
     global boceto_contrato
 
@@ -69,7 +65,6 @@ def actualizar_boceto():
 
     texto_boceto.config(state=tk.DISABLED)
 
-# Función para manejar la selección de cláusulas
 def seleccionar_clausula(event):
     global clausulas_seleccionadas
 
@@ -77,29 +72,19 @@ def seleccionar_clausula(event):
     clausulas_seleccionadas = [listbox_clausulas.get(i) for i in seleccion]
     actualizar_boceto()
 
-# Función para seleccionar múltiples plantillas
-def seleccionar_plantillas():
-    global plantilla_paths
-    plantilla_paths = filedialog.askopenfilenames(filetypes=[("Documentos Word", "*.docx")])
-    if plantilla_paths:
-        lbl_plantilla.config(text=f"{len(plantilla_paths)} plantillas seleccionadas")
-        actualizar_boceto()
-
-# Función para seleccionar la carpeta de guardado
 def seleccionar_directorio():
     global directorio_guardado
     directorio_guardado = filedialog.askdirectory()
     if directorio_guardado:
         lbl_directorio.config(text=f"Carpeta de guardado: {directorio_guardado}")
 
-# Función para generar el contrato
 def generar_contrato():
     if not directorio_guardado:
         messagebox.showwarning("Advertencia", "Por favor, selecciona una carpeta para guardar los archivos.")
         return
 
     datos = {
-        "NombrePFISICA": entry_NOMBREPFISICA.get(),
+        "Nombre": entry_NOMBREPFISICA.get(),
         "numeroID": entry_NUMEROID.get(),
         "institucion": entry_institucion.get(),
         "curp": entry_curp.get(),
@@ -120,10 +105,8 @@ def generar_contrato():
 
     nombre_archivo_base = f"{datos['NombrePFISICA']}_{nombre_archivo_base}.docx"
 
-    # Crear un nuevo documento Word
     doc = Document()
 
-    # Agregar datos al documento
     doc.add_paragraph(f"Nombre: {datos['NombrePFISICA']}")
     doc.add_paragraph(f"Número de Identificación: {datos['numeroID']}")
     doc.add_paragraph(f"Institución: {datos['institucion']}")
@@ -133,7 +116,6 @@ def generar_contrato():
     doc.add_paragraph(f"Correo: {datos['correo']}")
     doc.add_paragraph(f"Fecha: {datos['FECHAF']}")
 
-    # Agregar cláusulas seleccionadas al documento en el orden correcto
     for nombre_clausula in clausulas_seleccionadas:
         doc.add_paragraph(clausulas[nombre_clausula])
 
@@ -143,14 +125,12 @@ def generar_contrato():
     messagebox.showinfo("Éxito", f"Contrato generado: {nombre_archivo_base}")
     actualizar_boceto()
 
-# Función para abrir la carpeta donde se guardaron los contratos
 def abrir_carpeta():
     if directorio_guardado:
         os.startfile(directorio_guardado)
     else:
         messagebox.showwarning("Advertencia", "No hay carpeta seleccionada.")
 
-# Crear la ventana principal
 root = tk.Tk()
 root.title("Generador de Contratos Personalizado")
 root.geometry("1200x700")
@@ -164,7 +144,6 @@ frame_derecha.pack(side=tk.RIGHT, padx=10, pady=10)
 frame_centro = tk.Frame(root)
 frame_centro.pack(padx=10, pady=10)
 
-# Botones a la izquierda
 btn_plantilla = tk.Button(frame_izquierda, text="Seleccionar Plantillas", width=20, command=seleccionar_plantillas)
 btn_plantilla.pack(pady=5)
 
@@ -183,7 +162,6 @@ btn_generar.pack(pady=5)
 btn_abrir = tk.Button(frame_izquierda, text="Abrir Carpeta", width=20, command=abrir_carpeta)
 btn_abrir.pack(pady=5)
 
-# Lista de cláusulas
 lbl_clausulas = tk.Label(frame_izquierda, text="Cláusulas disponibles:")
 lbl_clausulas.pack()
 
@@ -195,7 +173,6 @@ listbox_clausulas.pack()
 
 scrollbar_clausulas.config(command=listbox_clausulas.yview)
 
-# Cargar las cláusulas y llenar la lista
 cargar_clausulas()
 for clausula in clausulas:
     listbox_clausulas.insert(tk.END, clausula)
@@ -203,7 +180,6 @@ for clausula in clausulas:
 listbox_clausulas.bind("<Double-Button-1>", mostrar_vista_previa)
 listbox_clausulas.bind("<<ListboxSelect>>", seleccionar_clausula)
 
-# Boceto del contrato al centro
 lbl_boceto = tk.Label(frame_centro, text="Boceto del Contrato:")
 lbl_boceto.pack()
 
@@ -211,7 +187,6 @@ texto_boceto = scrolledtext.ScrolledText(frame_centro, width=80, height=20)
 texto_boceto.pack()
 texto_boceto.config(state=tk.DISABLED)
 
-# Campos de entrada a la derecha
 tk.Label(frame_derecha, text="NombrePFISICA:").pack()
 entry_NOMBREPFISICA = tk.Entry(frame_derecha, width=30)
 entry_NOMBREPFISICA.pack()
