@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Bot</title>
+</head>
+<body>
+    <h1>Legal Bot</h1>
+    <form id="legal-form">
+        <label>¿Quién es el actor?</label>
+        <input type="text" id="actor" required><br>
+        
+        <label>¿Quién es el demandado?</label>
+        <input type="text" id="demandado" required><br>
+        
+        <label>¿Cuál es el documento base?</label>
+        <input type="text" id="documento_base" required><br>
+        
+        <label>¿Qué otras pruebas tienes?</label>
+        <input type="text" id="otras_pruebas"><br>
+        
+        <button type="submit">Generar Documento</button>
+    </form>
+    
+    <p id="mensaje"></p>
+    
+    <script>
+        document.getElementById("legal-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            const datos = {
+                actor: document.getElementById("actor").value,
+                demandado: document.getElementById("demandado").value,
+                documento_base: document.getElementById("documento_base").value,
+                otras_pruebas: document.getElementById("otras_pruebas").value
+            };
+            
+            const respuesta = await fetch("http://127.0.0.1:5000/generar_documento", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(datos)
+            });
+            
+            const resultado = await respuesta.json();
+            document.getElementById("mensaje").textContent = resultado.mensaje;
+        });
+    </script>
+</body>
+</html>
